@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>wonkittiez — order lookup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --grid-bg:#C7D2E9;
+    --grid-line:#B7C3E1;
+    --deep-blue:#7C93B8;
+    --blob:#F1EDE1;
+    --ink:#20211f;
+    --muted:#6b7488;
+    --white:#ffffff;
+    --border:#20211f;
+    --pill:#DDE4F2;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Nunito', sans-serif;
+    color:var(--ink);
+    background:var(--white);
+  }
+
+  /* ---------- banner ---------- */
+  .banner{
+    position:relative;
+    overflow:hidden;
+    background-color:var(--grid-bg);
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size:34px 34px;
+    padding:70px 24px 90px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .corner-blob{
+    position:absolute;
+    background:var(--deep-blue);
+    opacity:0.9;
+  }
+  .corner-blob.tr{
+    top:-60px; right:-50px;
+    width:190px; height:170px;
+    border-radius:38% 62% 55% 45% / 60% 45% 55% 40%;
+  }
+  .corner-blob.bl{
+    bottom:-70px; left:-60px;
+    width:170px; height:160px;
+    border-radius:55% 45% 40% 60% / 45% 55% 45% 55%;
+  }
+  .squiggle{
+    position:absolute;
+    opacity:0.9;
+  }
+  .squiggle.top-left{ top:26px; left:24px; width:110px; }
+  .squiggle.bottom-right{ bottom:24px; right:34px; width:130px; }
+
+  .hero-blob{
+    position:relative;
+    background:var(--blob);
+    border:2.5px dashed var(--border);
+    border-radius:46% 54% 52% 48% / 56% 44% 56% 44%;
+    padding:38px 56px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-width:280px;
+  }
+  .hero-blob h1{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size:clamp(30px, 5vw, 44px);
+    margin:0;
+    color:var(--ink);
+    letter-spacing:0.01em;
+  }
+  .doodle-plane{
+    position:absolute;
+    top:-6px; right:-30px;
+    width:52px;
+    transform:rotate(18deg);
+  }
+  .doodle-sparkle{
+    position:absolute;
+    font-family:'Nunito', sans-serif;
+    color:var(--ink);
+    opacity:0.75;
+  }
+  .doodle-sparkle.s1{ top:12px; left:-6px; font-size:15px; }
+  .doodle-sparkle.s2{ bottom:6px; right:38%; font-size:13px; }
+  .doodle-plus{
+    position:absolute;
+    font-weight:800;
+    color:var(--ink);
+    opacity:0.7;
+  }
+  .doodle-plus.p1{ top:-2px; left:36%; font-size:18px; }
+  .doodle-plus.p2{ bottom:2px; right:-8px; font-size:16px; }
+
+  /* ---------- content ---------- */
+  .content{
+    max-width:600px;
+    margin:0 auto;
+    padding:44px 24px 90px;
+  }
+  .sub{
+    color:var(--muted);
+    font-size:15.5px;
+    line-height:1.6;
+    max-width:48ch;
+    margin:0 0 34px;
+    font-weight:600;
+  }
+
+  .search-box label{
+    display:block;
+    font-family:'Baloo 2', sans-serif;
+    font-size:13px;
+    color:var(--ink);
+    margin-bottom:9px;
+    font-weight:600;
+  }
+  .input-row{
+    display:flex;
+    gap:10px;
+  }
+  input[type="text"]{
+    flex:1;
+    background:var(--white);
+    border:2.5px solid var(--ink);
+    color:var(--ink);
+    font-family:'Nunito', sans-serif;
+    font-weight:700;
+    font-size:16px;
+    padding:15px 18px;
+    border-radius:16px;
+    outline:none;
+    transition:box-shadow .18s ease, transform .15s ease;
+  }
+  input[type="text"]::placeholder{color:#a7adba; font-weight:600;}
+  input[type="text"]:focus{
+    box-shadow:0 0 0 3px var(--pill);
+  }
+  button{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:600;
+    font-size:15.5px;
+    color:var(--ink);
+    background:var(--white);
+    border:2.5px solid var(--ink);
+    border-radius:999px;
+    padding:0 26px;
+    cursor:pointer;
+    transition:transform .15s ease, background .15s ease;
+  }
+  button:hover{background:var(--pill);}
+  button:active{transform:scale(0.96);}
+  button:focus-visible, input:focus-visible{outline:2px solid var(--deep-blue); outline-offset:2px;}
+
+  .results{
+    margin-top:38px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  .status-line{
+    font-family:'Baloo 2', sans-serif;
+    font-size:14px;
+    color:var(--muted);
+    margin-top:38px;
+    margin-bottom:-20px;
+  }
+  .status-line strong{color:var(--ink);}
+
+  .card{
+    position:relative;
+    background:var(--blob);
+    border:2.25px dashed var(--border);
+    border-radius:26px;
+    padding:20px 22px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    animation:rise .35s ease both;
+  }
+  .card-left{min-width:0;}
+  .group-name{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:600;
+    font-size:17px;
+    line-height:1.3;
+    margin:0 0 8px;
+  }
+  .status-pill{
+    display:inline-block;
+    font-family:'Nunito', sans-serif;
+    font-weight:800;
+    font-size:11.5px;
+    letter-spacing:0.02em;
+    color:var(--ink);
+    background:var(--white);
+    border:1.75px solid var(--ink);
+    border-radius:999px;
+    padding:3px 12px;
+  }
+  .no-status{
+    font-family:'Nunito', sans-serif;
+    font-size:12.5px;
+    color:var(--muted);
+    font-weight:700;
+  }
+  .card-right{
+    flex-shrink:0;
+    text-align:center;
+    background:var(--white);
+    border:2px solid var(--ink);
+    border-radius:16px;
+    padding:8px 16px;
+    min-width:64px;
+  }
+  .qty{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size:24px;
+    color:var(--ink);
+    line-height:1;
+  }
+  .qty-label{
+    font-family:'Nunito', sans-serif;
+    font-size:9.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-top:3px;
+    font-weight:700;
+  }
+  .item-right{
+    min-width:auto;
+    max-width:170px;
+    text-align:left;
+    padding:10px 14px;
+  }
+  .item-text{
+    font-family:'Nunito', sans-serif;
+    font-weight:700;
+    font-size:12.5px;
+    line-height:1.4;
+    color:var(--ink);
+  }
+
+  .empty{
+    margin-top:38px;
+    padding:26px 24px;
+    background:var(--pill);
+    border:2.25px dashed var(--border);
+    border-radius:22px;
+    color:var(--ink);
+    font-size:14.5px;
+    line-height:1.6;
+    font-weight:600;
+  }
+  .empty strong{font-family:'Baloo 2', sans-serif;}
+
+  .total-strip{
+    margin-top:4px;
+    font-family:'Baloo 2', sans-serif;
+    font-size:13.5px;
+    color:var(--muted);
+    padding-top:14px;
+    border-top:2px dashed var(--grid-line);
+  }
+  .total-strip strong{color:var(--deep-blue);}
+
+  footer{
+    max-width:600px;
+    margin:0 auto;
+    padding:0 24px 50px;
+    text-align:center;
+    color:#a7adba;
+    font-family:'Nunito', sans-serif;
+    font-size:11.5px;
+    font-weight:700;
+  }
+
+  @keyframes rise{
+    from{opacity:0; transform:translateY(6px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  @media (prefers-reduced-motion: reduce){ .card{animation:none;} }
+  @media (max-width:480px){
+    .banner{padding:54px 16px 74px;}
+    .hero-blob{padding:30px 34px;}
+    .input-row{flex-direction:column;}
+    button{padding:14px;}
+    .card{flex-direction:column; align-items:flex-start;}
+    .card-right{align-self:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="banner">
+    <div class="corner-blob tr"></div>
+    <div class="corner-blob bl"></div>
+
+    <svg class="squiggle top-left" viewBox="0 0 110 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 13C8 3 14 3 20 13C26 23 32 23 38 13C44 3 50 3 56 13C62 23 68 23 74 13C80 3 86 3 92 13C96 19 100 21 106 17" stroke="#20211f" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+    <svg class="squiggle bottom-right" viewBox="0 0 130 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 13C9 3 16 3 23 13C30 23 37 23 44 13C51 3 58 3 65 13C72 23 79 23 86 13C93 3 100 3 107 13C112 19 117 21 124 17" stroke="#DDE4F2" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+
+    <div class="hero-blob">
+      <span class="doodle-plus p1">+</span>
+      <span class="doodle-plus p2">+</span>
+      <span class="doodle-sparkle s1">✦</span>
+      <span class="doodle-sparkle s2">✧</span>
+      <svg class="doodle-plane" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M55 5L4 26L27 33L34 56L42 40L55 5Z" fill="#ffffff" stroke="#20211f" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M27 33L42 20" stroke="#20211f" stroke-width="2.25" stroke-linecap="round"/>
+      </svg>
+      <h1>wonkittiez</h1>
+    </div>
+  </div>
+
+  <div class="content">
+    <p class="sub">Type the username you ordered under and every group order you're part of will show up below.</p>
+
+    <div class="search-box">
+      <label for="username">Your username</label>
+      <div class="input-row">
+        <input type="text" id="username" placeholder="e.g. wonspage" autocomplete="off" />
+        <button id="searchBtn">Search</button>
+      </div>
+    </div>
+
+    <div id="output"></div>
+  </div>
+
+  <footer>updated by wonkittiez · usernames matched as typed</footer>
+
+<script>
+  // ---------------------------------------------------------------
+  // DATA: one entry per group order tab. To add another group order,
+  // copy a block below and paste your rows in as
+  // { username, qty, status }. "status" is optional — leave it out
+  // or set it to "" if you haven't added that column yet.
+  // ---------------------------------------------------------------
+  const orders = [
+    {
+      group: "blood saga — busan ld",
+      data: [
+        { username: "wonspage", qty: 15, status: "ready to ship" },
+        { username: "mary_jane9503", qty: 2, status: "ready to ship" },
+        { username: "ayutatm", qty: 3, status: "ready to ship" }
+      ]
+    },
+    {
+      group: "the sin: bliss weverse global standard pob",
+      data: [
+        { username: "pshfvngs", qty: 3, status: "ordered" },
+        { username: "engene_jakeyjakey", qty: 3, status: "ordered" },
+        { username: "wintryhoon", qty: 10, status: "ordered" },
+        { username: "healingning", qty: 4, status: "ordered" },
+        { username: "mary_jane9503", qty: 5, status: "ordered" }
+      ]
+    },
+    {
+      group: "the sin: bliss weverse global engene pob",
+      data: [
+        { username: "pshfvngs", qty: 3, status: "ordered" },
+        { username: "engene_jakeyjakey", qty: 3, status: "ordered" },
+        { username: "wintryhoon", qty: 10, status: "ordered" },
+        { username: "healingning", qty: 2, status: "ordered" },
+        { username: "mary_jane9503", qty: 9, status: "ordered" },
+        { username: "wonspage", qty: 24, status: "ordered" },
+        { username: "luvsnowz", qty: 1, status: "ordered" }
+      ]
+    },
+    {
+      group: "blood saga busan event - day 2 go",
+      data: [
+        { username: "pshfvngs", qty: 7, status: "ordered" },
+        { username: "bluenoon_1009", qty: 1, status: "ordered" },
+        { username: "bambitrades", qty: 3, status: "ordered" },
+        { username: "healingning", qty: 6, status: "ordered" },
+        { username: "mary_jane9503", qty: 8, status: "ordered" },
+        { username: "wonspage", qty: 23, status: "ordered" },
+        { username: "luvsnowz", qty: 1, status: "ordered" },
+        { username: "ayutatm", qty: 6, status: "ordered" },
+        { username: "movinsoobin", qty: 1, status: "ordered" }
+      ]
+    },
+    {
+      group: "blood saga busan event - day 1 go",
+      data: [
+        { username: "pshfvngs", qty: 9, status: "ordered" },
+        { username: "bluenoon_1009", qty: 1, status: "ordered" },
+        { username: "bambitrades", qty: 3, status: "ordered" },
+        { username: "healingning", qty: 8, status: "ordered" },
+        { username: "mary_jane9503", qty: 6, status: "ordered" },
+        { username: "wonspage", qty: 20, status: "ordered" },
+        { username: "luvsnowz", qty: 1, status: "ordered" },
+        { username: "ayutatm", qty: 4, status: "ordered" },
+        { username: "inmysoul4jayy", qty: 2, status: "ordered" },
+        { username: "nnikisu", qty: 3, status: "ordered" },
+        { username: "tannienluvs", qty: 4, status: "ordered" },
+        { username: "movinsoobin", qty: 2, status: "ordered" }
+      ]
+    },
+    {
+      group: "enchin merch",
+      data: [
+        { username: "nnikisu", item: "1 noxstar face cushion", status: "ready to ship" },
+        { username: "mary_jane9503", item: "1 - manila exclusive phone strap", status: "ready to ship" }
+      ]
+    }
+  ];
+
+  const input = document.getElementById('username');
+  const output = document.getElementById('output');
+  const btn = document.getElementById('searchBtn');
+
+  function render(query){
+    output.innerHTML = "";
+    if(!query.trim()){
+      return;
+    }
+    const q = query.trim().toLowerCase();
+    const matches = [];
+    orders.forEach(group => {
+      group.data.forEach(row => {
+        if(row.username.toLowerCase() === q){
+          matches.push({ group: group.group, qty: row.qty, item: row.item, status: row.status });
+        }
+      });
+    });
+
+    if(matches.length === 0){
+      output.innerHTML = `
+        <div class="empty">
+          <strong>No orders found for "${escapeHtml(query.trim())}".</strong><br/>
+          Double-check the spelling, or make sure it matches exactly what you used when ordering.
+        </div>`;
+      return;
+    }
+
+    const status = document.createElement('div');
+    status.className = 'status-line';
+    status.innerHTML = `<strong>${matches.length}</strong> group order${matches.length > 1 ? 's' : ''} found for <strong>${escapeHtml(query.trim())}</strong>`;
+    output.appendChild(status);
+
+    const results = document.createElement('div');
+    results.className = 'results';
+
+    let total = 0;
+    let hasQtyRow = false;
+    matches.forEach(m => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      const statusHtml = (m.status && m.status.trim())
+        ? `<span class="status-pill">${escapeHtml(m.status.trim())}</span>`
+        : `<span class="no-status">status not set yet</span>`;
+
+      let rightHtml;
+      if(m.qty !== undefined && m.qty !== null && m.qty !== ""){
+        total += Number(m.qty) || 0;
+        hasQtyRow = true;
+        rightHtml = `
+          <div class="card-right">
+            <div class="qty">${m.qty}</div>
+            <div class="qty-label">sets</div>
+          </div>`;
+      } else {
+        rightHtml = `
+          <div class="card-right item-right">
+            <div class="item-text">${escapeHtml(m.item || "")}</div>
+          </div>`;
+      }
+
+      card.innerHTML = `
+        <div class="card-left">
+          <p class="group-name">${escapeHtml(m.group)}</p>
+          ${statusHtml}
+        </div>
+        ${rightHtml}`;
+      results.appendChild(card);
+    });
+
+    output.appendChild(results);
+
+    if(matches.length > 1 && hasQtyRow){
+      const totalStrip = document.createElement('div');
+      totalStrip.className = 'total-strip';
+      totalStrip.innerHTML = `total sets across all group orders: <strong>${total} sets</strong>`;
+      output.appendChild(totalStrip);
+    }
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  btn.addEventListener('click', () => render(input.value));
+  input.addEventListener('keydown', (e) => { if(e.key === 'Enter') render(input.value); });
+</script>
+</body>
+</html>
